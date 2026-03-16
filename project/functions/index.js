@@ -4,7 +4,7 @@ export async function onRequest(context) {
    const url = new URL(context.request.url);
 
    // return immediatelly 
-   return context.next(); // let Cloudflare Pages serve static files directly
+   //return context.next(); // let Cloudflare Pages serve static files directly
 
    // Only handle the homepage
    if (url.pathname !== "/") {
