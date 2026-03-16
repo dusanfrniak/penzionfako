@@ -1,33 +1,40 @@
+// functions/index.js
+
 export async function onRequest(context) {
+   const url = new URL(context.request.url);
 
-   const url = new URL(context.request.url)
+   // return immediatelly 
+   return context.next(); // let Cloudflare Pages serve static files directly
 
-   // Only apply on homepage
+   // Only handle the homepage
    if (url.pathname !== "/") {
-      return context.next()
+      return context.next(); // let Cloudflare Pages serve static files directly
    }
 
-   const country = context.request.headers.get("cf-ipcountry")
-   const lang = context.request.headers.get("accept-language")
+   // Detect visitor country and browser language
+   const country = context.request.headers.get("cf-ipcountry") || "";
+   const acceptLang = context.request.headers.get("accept-language") || "";
 
-   // Polish visitors
-   if (country === "PL" || (lang && lang.startsWith("pl"))) {
+   // Default URLs for languages
+   const defaultLang = "/en/";
+   const polishLang = "/pl/";
+   const slovakLang = "/sk/";
 
-      const newRequest = new Request(new URL("/pl/index.html", context.request.url), context.request)
-      return context.env.ASSETS.fetch(newRequest)
+   // Check for Polish
+   if (country === "PL" || acceptLang.startsWith("pl")) {
+      return Response.redirect(new URL(polishLang, context.request.url), 302);
    }
-   if (country === "SK" || (lang && lang.startsWith("sk"))) {
 
-      const newRequest = new Request(new URL("/sk/index.html", context.request.url), context.request)
-      return context.env.ASSETS.fetch(newRequest)
+   // Check for Slovak
+   if (country === "SK" || acceptLang.startsWith("sk")) {
+      return Response.redirect(new URL(slovakLang, context.request.url), 302);
    }
-   if (country === "CZ" || (lang && lang.startsWith("cz"))) {
 
-      const newRequest = new Request(new URL("/sk/index.html", context.request.url), context.request)
-      return context.env.ASSETS.fetch(newRequest)
+   // Check for Slovak
+   if (country === "CZ" || acceptLang.startsWith("cz")) {
+      return Response.redirect(new URL(slovakLang, context.request.url), 302);
    }
 
    // Default language
-   const newRequest = new Request(new URL("/en/index.html", context.request.url), context.request)
-   return context.env.ASSETS.fetch(newRequest)
+   return Response.redirect(new URL(defaultLang, context.request.url), 302);
 }
