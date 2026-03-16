@@ -11,9 +11,20 @@ export async function onRequest(context) {
       return context.next(); // let Cloudflare Pages serve static files directly
    }
 
+   const debug = url.searchParams.get("debug") === "1";
+
    // Detect visitor country and browser language
    const country = context.request.headers.get("cf-ipcountry") || "";
    const acceptLang = context.request.headers.get("accept-language") || "";
+
+   if (debug) {
+      return new Response(`DEBUG: country=${country}\naccept-language=${acceptLang}`, {
+         headers: { "content-type": "text/plain" },
+      });
+   }
+
+   //console.log("DEBUG: Visitor country =", country);
+   //console.log("DEBUG: Accept-Language =", acceptLang);
 
    // Default URLs for languages
    const defaultLang = "/en/";
