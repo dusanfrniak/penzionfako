@@ -3,25 +3,29 @@
 export async function onRequest(context) {
    const url = new URL(context.request.url);
 
-   // return immediatelly 
-   //return context.next(); // let Cloudflare Pages serve static files directly
+
+   const debug = url.searchParams.get("debug") === "1";
+
+   if (debug) {
+      // Detect visitor country and browser language
+      const country = context.request.headers.get("cf-ipcountry") || "";
+      const acceptLang = context.request.headers.get("accept-language") || "";
+
+      return new Response(`DEBUG: country=${country}\naccept-language=${acceptLang}`, {
+         headers: { "content-type": "text/plain" },
+      });
+   }
 
    // Only handle the homepage
    if (url.pathname !== "/") {
       return context.next(); // let Cloudflare Pages serve static files directly
    }
 
-   const debug = url.searchParams.get("debug") === "1";
 
-   // Detect visitor country and browser language
-   const country = context.request.headers.get("cf-ipcountry") || "";
-   const acceptLang = context.request.headers.get("accept-language") || "";
 
-   if (debug) {
-      return new Response(`DEBUG: country=${country}\naccept-language=${acceptLang}`, {
-         headers: { "content-type": "text/plain" },
-      });
-   }
+
+
+
 
    //console.log("DEBUG: Visitor country =", country);
    //console.log("DEBUG: Accept-Language =", acceptLang);
