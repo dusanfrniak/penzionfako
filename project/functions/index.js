@@ -23,8 +23,8 @@ export async function onRequest(context) {
 
 
 
-
-
+   const country = context.request.headers.get("cf-ipcountry") || "";
+   const acceptLang = context.request.headers.get("accept-language") || "";
 
 
    //console.log("DEBUG: Visitor country =", country);
